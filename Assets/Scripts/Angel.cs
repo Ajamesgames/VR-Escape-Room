@@ -10,6 +10,8 @@ public class Angel : MonoBehaviour
     private float _rotateSpeed = 100f;
     private bool _canMove = true;
     private GameObject _player;
+    [SerializeField]
+    private GameObject _keyCabinet;
 
     // Start is called before the first frame update
     void Start()
@@ -45,5 +47,14 @@ public class Angel : MonoBehaviour
     public void PlayerNotLooking()
     {
         _canMove = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Location"))
+        {
+            Destroy(this.gameObject);
+            _keyCabinet.GetComponent<Rigidbody>().isKinematic = false; //opens key door
+        }
     }
 }
