@@ -12,10 +12,18 @@ public class Angel : MonoBehaviour
     private GameObject _player;
     [SerializeField]
     private GameObject _keyCabinet;
+    [SerializeField]
+    private GameObject _deathPosObject;
+    private Vector3 _deathPos;
+    [SerializeField]
+    private GameObject _rayInteractor;
+    private bool _isFrozen = false;
+    private Vector3 _currentPos;
 
     // Start is called before the first frame update
     void Start()
     {
+        _deathPos = _deathPosObject.transform.position;
         _player = GameObject.FindWithTag("Player");
         if(_player == null)
         {
@@ -28,6 +36,13 @@ public class Angel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        EnemyMovement();
+        FreezePlayer();
+
+    }
+
+    private void EnemyMovement()
+    {
         //if canmove true, move and rotate towards player
         if (_canMove == true)
         {
@@ -37,7 +52,15 @@ public class Angel : MonoBehaviour
             transform.Translate(Vector3.forward * _angelSpeed * Time.deltaTime);
         }
     }
-
+    
+    private void FreezePlayer()
+    {
+        if (_isFrozen == true)
+        {
+            _player.transform.position = _deathPos;
+            transform.position = _currentPos;
+        }
+    }
 
     public void PlayerLooking()
     {
@@ -51,10 +74,19 @@ public class Angel : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Player"))
+        {
+            _currentPos = transform.position;
+            _player.transform.position = _deathPos;
+            _player.transform.rotation = _deathPosObject.transform.rotation;
+            _isFrozen = true;
+            _rayInteractor.SetActive(true);
+        }
+
         if (other.CompareTag("Location"))
         {
-            Destroy(this.gameObject);
             _keyCabinet.GetComponent<Rigidbody>().isKinematic = false; //opens key door
+            Destroy(this.gameObject);
         }
     }
 }
