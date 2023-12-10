@@ -5,7 +5,7 @@ using UnityEngine;
 public class Angel : MonoBehaviour
 {
     [SerializeField]
-    private float _angelSpeed = 5.0f;
+    private float _angelSpeed = 0f;
     [SerializeField]
     private float _rotateSpeed = 100f;
     private bool _canMove = true;
@@ -19,6 +19,14 @@ public class Angel : MonoBehaviour
     private GameObject _rayInteractor;
     private bool _isFrozen = false;
     private Vector3 _currentPos;
+    [SerializeField]
+    private GameObject _lights;
+    [SerializeField]
+    private GameObject _locationLight;
+    [SerializeField]
+    private GameObject _key;
+    [SerializeField]
+    private GameObject _saw;
 
     // Start is called before the first frame update
     void Start()
@@ -72,6 +80,12 @@ public class Angel : MonoBehaviour
         _canMove = true;
     }
 
+    public void IncreaseSpeed()
+    {
+        _angelSpeed = 5.0f;
+    }
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -81,11 +95,16 @@ public class Angel : MonoBehaviour
             _player.transform.rotation = _deathPosObject.transform.rotation;
             _isFrozen = true;
             _rayInteractor.SetActive(true);
+            _lights.SetActive(false);
         }
 
         if (other.CompareTag("Location"))
         {
             _keyCabinet.GetComponent<Rigidbody>().isKinematic = false; //opens key door
+            _lights.SetActive(true);
+            _locationLight.SetActive(false);
+            _key.SetActive(true);
+            _saw.SetActive(true);
             Destroy(this.gameObject);
         }
     }

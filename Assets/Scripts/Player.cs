@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
         _rayInteractor.SetActive(false);
         transform.position = _startPos.transform.position;
         transform.rotation = _startPos.transform.rotation;
-        _angel.SetActive(true);
+        //_angel.SetActive(true);
     }
 
 
