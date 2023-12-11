@@ -8,17 +8,12 @@ public class Angel : MonoBehaviour
     private float _angelSpeed = 0f;
     [SerializeField]
     private float _rotateSpeed = 100f;
-    private bool _canMove = true;
-    private GameObject _player;
     [SerializeField]
     private GameObject _keyCabinet;
     [SerializeField]
     private GameObject _deathPosObject;
-    private Vector3 _deathPos;
     [SerializeField]
     private GameObject _rayInteractor;
-    private bool _isFrozen = false;
-    private Vector3 _currentPos;
     [SerializeField]
     private GameObject _lights;
     [SerializeField]
@@ -27,6 +22,26 @@ public class Angel : MonoBehaviour
     private GameObject _key;
     [SerializeField]
     private GameObject _saw;
+    [SerializeField]
+    private GameObject _keyDoor;
+    [SerializeField]
+    private GameObject _scaryMusicObject;
+    [SerializeField]
+    private GameObject _backgroundMusicObject;
+    [SerializeField]
+    private GameObject _endLocation;
+    private GameObject _player;
+
+    private AudioSource _scaryMusic;
+    private AudioSource _backgroundMusic;
+    private AudioSource _victorySound;
+    private AudioSource _doorCreekSound;
+    private AudioSource _stoneMovementSound;
+
+    private bool _canMove = true;
+    private bool _isFrozen = false;
+    private Vector3 _currentPos;
+    private Vector3 _deathPos;
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +52,31 @@ public class Angel : MonoBehaviour
         {
             Debug.LogError("Can't locate Player Tag");
         }
-
+        _scaryMusic = _scaryMusicObject.GetComponent<AudioSource>();
+        if(_scaryMusic == null)
+        {
+            Debug.Log("Scary music is null");
+        }
+        _backgroundMusic = _backgroundMusicObject.GetComponent<AudioSource>();
+        if (_backgroundMusic == null)
+        {
+            Debug.Log("Background music is null");
+        }
+        _doorCreekSound = _keyDoor.GetComponent<AudioSource>();
+        if (_doorCreekSound == null)
+        {
+            Debug.Log("Door creek sound is null");
+        }
+        _victorySound = _endLocation.GetComponent<AudioSource>();
+        if (_victorySound == null)
+        {
+            Debug.Log("Victory sound is null");
+        }
+        _stoneMovementSound = GetComponent<AudioSource>();
+        if (_stoneMovementSound == null)
+        {
+            Debug.Log("Stone movement sound is null");
+        }
 
     }
 
@@ -46,7 +85,6 @@ public class Angel : MonoBehaviour
     {
         EnemyMovement();
         FreezePlayer();
-
     }
 
     private void EnemyMovement()
@@ -73,11 +111,13 @@ public class Angel : MonoBehaviour
     public void PlayerLooking()
     {
         _canMove = false;
+        _stoneMovementSound.Stop();
     }
 
     public void PlayerNotLooking()
     {
         _canMove = true;
+        _stoneMovementSound.Play();
     }
 
     public void IncreaseSpeed()
@@ -90,6 +130,10 @@ public class Angel : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            if (other != null)
+            {
+                other.GetComponent<AudioSource>().Play();
+            }
             _currentPos = transform.position;
             _player.transform.position = _deathPos;
             _player.transform.rotation = _deathPosObject.transform.rotation;
@@ -100,11 +144,18 @@ public class Angel : MonoBehaviour
 
         if (other.CompareTag("Location"))
         {
-            _keyCabinet.GetComponent<Rigidbody>().isKinematic = false; //opens key door
+            if (other != null)
+            {
+                _keyCabinet.GetComponent<Rigidbody>().isKinematic = false; //opens key door
+            }
             _lights.SetActive(true);
             _locationLight.SetActive(false);
             _key.SetActive(true);
             _saw.SetActive(true);
+            _doorCreekSound.Play();
+            _victorySound.Play();
+            _scaryMusic.Stop();
+            _backgroundMusic.Play();
             Destroy(this.gameObject);
         }
     }

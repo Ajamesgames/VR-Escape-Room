@@ -12,13 +12,6 @@ public class YouWinEnding : MonoBehaviour
     private Vector3 _currentPos;
     private bool _isFrozen = false;
     
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -40,8 +33,7 @@ public class YouWinEnding : MonoBehaviour
             _rayInteractor.SetActive(true);
             _currentPos = _player.transform.position;
             _isFrozen = true;
+            GetComponent<AudioSource>().Play();
         }
     }
-
-
 }
